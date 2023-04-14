@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Pawalk</string>
+    <string name="email_input">email</string>
+    <string name="password_input">password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="create_account">Create New Account</string>
+    <string name="account_email">email@email.com</string>
+    <string name="sign_up">Sign Up</string>
+</resources>

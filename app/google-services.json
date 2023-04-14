@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "30237102650",
+    "project_id": "pawalk-7f968",
+    "storage_bucket": "pawalk-7f968.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30237102650:android:ba91039fc024d73e359b03",
+        "android_client_info": {
+          "package_name": "com.example.pawalk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "30237102650-l3gqc5afc3nhkrdckffsavv876qj3m29.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH457NWy9s1P3m-tlnUI0ZLK305vjE5IQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "30237102650-l3gqc5afc3nhkrdckffsavv876qj3m29.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

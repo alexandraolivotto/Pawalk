@@ -8,23 +8,24 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
+import com.example.pawalk.models.User
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class CreateAccount : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
 
         auth = Firebase.auth
-
+        firestore = FirebaseFirestore.getInstance()
         val editTextEmail : TextInputEditText = findViewById(R.id.email_sign_up_input)
         val editTextPassword : TextInputEditText = findViewById(R.id.password_sign_up_input)
 
@@ -57,6 +58,13 @@ class CreateAccount : AppCompatActivity() {
                         //val user = auth.currentUser
                        // updateUI(user)
                         progressBar.visibility = View.GONE
+                        //link user to users db
+                        val newUser : User = User(email, "change username", "insert bio")
+                        val newUserUid = auth.currentUser?.uid
+                        if (newUserUid != null) {
+                            firestore.collection("users").document(newUserUid).set(newUser)
+                        }
+
                         Toast.makeText(baseContext, "Account created.",
                             Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, MainActivity::class.java)

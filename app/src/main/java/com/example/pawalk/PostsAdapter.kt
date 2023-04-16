@@ -35,7 +35,7 @@ class PostsAdapter (val context : Context, val posts: List<Post>) :
         fun bind(post: Post) {
             itemView.findViewById<TextView>(R.id.display_name_text_view).text = post.user?.email
             itemView.findViewById<TextView>(R.id.post_time_text_view).text = post.location + " | " + post.duration + " | " + DateUtils.getRelativeTimeSpanString(post.creationTimeMs)
-            //itemView.findViewById<ImageView>(R.id.item_gallery_post_image_imageview).setImageURI(Uri.parse(post.imageUri))
+            itemView.findViewById<TextView>(R.id.description_textview).text = post.caption
             Glide.with(context).load(post.imageUri).into(itemView.findViewById(R.id.item_gallery_post_image_imageview))
         }
     }

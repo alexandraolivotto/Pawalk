@@ -8,7 +8,7 @@
         android:id="@+id/addSessionView2"
         android:name="com.example.pawalk.AddSessionFragment"
         android:label="fragment_add_session_view"
-        tools:layout="@layout/fragment_add_session_view" >
+        tools:layout="@layout/fragment_add_session" >
         <action
             android:id="@+id/action_addSessionView2_to_sessionScreen"
             app:destination="@id/sessionScreen" />

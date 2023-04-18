@@ -37,7 +37,7 @@ class SessionScreen : AppCompatActivity() {
                         true
                     }
                     R.id.toStartSession -> {
-                        replaceFragment(AddSessionFragment())
+                        replaceFragment(PostSession())
                         true
                     }
                 else -> {

@@ -7,12 +7,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import com.example.pawalk.models.Post
 import com.example.pawalk.models.User
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -27,7 +27,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
-
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -35,13 +34,14 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [AddSessionFragment.newInstance] factory method to
+ * Use the [PostSession.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AddSessionFragment : Fragment() {
+class PostSession : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
     private var photoUri: Uri? = null
     private var currentPhotoPath: String? = null
 
@@ -70,11 +70,11 @@ class AddSessionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         auth = Firebase.auth
         firestore = FirebaseFirestore.getInstance()
         storageReference = FirebaseStorage.getInstance().reference
-        val view : View = inflater.inflate(R.layout.fragment_add_session_view, container, false)
+        // Inflate the layout for this fragment
+        val view : View =  inflater.inflate(R.layout.fragment_post_session, container, false)
 
         location = view.findViewById(R.id.locationInput)
         duration = view.findViewById(R.id.durationInput)
@@ -97,6 +97,14 @@ class AddSessionFragment : Fragment() {
 
         postButton.setOnClickListener {
             handlePostButton()
+        }
+
+        discardButton.setOnClickListener {
+            caption.text?.clear()
+            image.setImageResource(R.drawable.ic_camera_foreground)
+            duration.text?.clear()
+            location.text?.clear()
+            Toast.makeText(activity, "Session cleared!", Toast.LENGTH_SHORT).show()
         }
 
         return view
@@ -127,6 +135,7 @@ class AddSessionFragment : Fragment() {
             image.setImageURI(photoUri)
         }
     }
+
 
     private fun handlePostButton() {
         if (location.text!!.isBlank()) {
@@ -159,7 +168,9 @@ class AddSessionFragment : Fragment() {
                     Toast.makeText(activity, "Session creation failed", Toast.LENGTH_SHORT).show()
                 }
                 caption.text?.clear()
-                image.setImageResource(0)
+                //image.setImageResource(0)
+                //image.setImageResource(R.drawable.ic_menu_camera)
+                image.setImageResource(R.drawable.ic_camera_foreground)
                 duration.text?.clear()
                 location.text?.clear()
                 Toast.makeText(activity, "Session posted!", Toast.LENGTH_SHORT).show()
@@ -173,12 +184,12 @@ class AddSessionFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment AddSessionView.
+         * @return A new instance of fragment PostSession.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            AddSessionFragment().apply {
+            PostSession().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

@@ -55,6 +55,7 @@ class FeedFragment : Fragment() {
         // Inflate the layout for this fragment
 
         // Inflate the layout for this fragment
+        posts.clear()
         auth = Firebase.auth
         firestore = FirebaseFirestore.getInstance()
         storageReference = FirebaseStorage.getInstance().reference

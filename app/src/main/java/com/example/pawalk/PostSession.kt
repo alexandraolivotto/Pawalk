@@ -97,6 +97,7 @@ class PostSession : Fragment() {
 
         postButton.setOnClickListener {
             handlePostButton()
+            //redirect
         }
 
         discardButton.setOnClickListener {

@@ -6,10 +6,10 @@ data class Post (
     var duration: String = "",
     var location: String = "",
     var creationTimeMs: Long = 0,
-    var user: User? = null
-        )
-
+    var user: User? = null,
+    var paws: Int = 0
+)
 {
-    constructor() : this( "", "","", "", 0, null
+    constructor() : this( "", "","", "", 0, null, 0
     )
 }

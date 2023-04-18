@@ -37,6 +37,7 @@ class PostsAdapter (val context : Context, val posts: List<Post>) :
             itemView.findViewById<TextView>(R.id.post_time_text_view).text = post.location + " | " + post.duration + " | " + DateUtils.getRelativeTimeSpanString(post.creationTimeMs)
             itemView.findViewById<TextView>(R.id.description_textview).text = post.caption
             Glide.with(context).load(post.imageUri).into(itemView.findViewById(R.id.item_gallery_post_image_imageview))
+            itemView.findViewById<TextView>(R.id.like_count_textview).text = post.paws.toString() + " paws"
         }
     }
 }

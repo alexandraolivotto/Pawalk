@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pawalk.models.Post
@@ -39,6 +40,7 @@ class FeedFragment : Fragment() {
     private lateinit var adapter: PostsAdapter
     private lateinit var rvPosts: RecyclerView
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -61,6 +63,7 @@ class FeedFragment : Fragment() {
         storageReference = FirebaseStorage.getInstance().reference
         val view : View = inflater.inflate(R.layout.fragment_feed, container, false)
         adapter = PostsAdapter(view.context, posts)
+
 
 
         rvPosts = view.findViewById<RecyclerView>(R.id.rvPosts)

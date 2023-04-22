@@ -4,22 +4,22 @@
     <item
         android:id="@+id/toFeed"
         android:icon="@drawable/baseline_home_24"
-        android:title=""/>
+        android:title="feed"/>
     <item
         android:id="@+id/toMap"
         android:icon="@drawable/baseline_person_pin_circle_24"
-        android:title="" />
+        android:title="map" />
     <item
         android:id="@+id/toSearch"
         android:icon="@drawable/baseline_search_24"
-        android:title="" />
+        android:title="search" />
     <item
         android:id="@+id/toStartSession"
         android:icon="@drawable/baseline_add_to_photos_24"
-        android:title="" />
+        android:title="post" />
 
     <item
         android:id="@+id/toProfile"
         android:icon="@drawable/baseline_person_24"
-        android:title="" />
+        android:title="profile" />
 </menu>

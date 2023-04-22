@@ -1,10 +1,20 @@
 package com.example.pawalk
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.pawalk.models.Location
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,12 +31,19 @@ class MapViewFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var locations: MutableList<Location>
+    private lateinit var Bucharest : GeoPoint
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        locations = mutableListOf()
+        Bucharest = GeoPoint(44.4274679459006, 26.09805559857452)
     }
 
     override fun onCreateView(
@@ -34,7 +51,49 @@ class MapViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map_view, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_map_view, container, false)
+        firestore = FirebaseFirestore.getInstance()
+
+        val mapFragment : SupportMapFragment = childFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
+        // Async map
+        mapFragment.getMapAsync(OnMapReadyCallback { googleMap ->
+            // When map is loaded
+            //show pet-friendly locations
+            firestore.collection("locations").get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    for (document in task.result) {
+                        if (document != null) {
+                            val geoPoint: GeoPoint? = document.getGeoPoint("locate")
+                            val name: String? = document.getString("name")
+                            val location = geoPoint?.let { LatLng(geoPoint.latitude, geoPoint.longitude) }
+                            googleMap.addMarker(MarkerOptions().position(location!!).title(name))
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(location))
+                        }
+                    }
+                } else {
+                    Log.d("TAG", task.exception!!.message!!) //Never ignore potential errors!
+                }
+            }
+
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(50F), 400, null);
+
+//            googleMap.setOnMapClickListener { latLng -> // When clicked on map
+//                // Initialize marker options
+//                val markerOptions = MarkerOptions()
+//                // Set position of marker
+//                markerOptions.position(latLng)
+//                // Set title of marker
+//                markerOptions.title("hello")
+//                // Remove all marker
+//                //googleMap.clear()
+//                // Animating to zoom the marker
+//                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f))
+//                // Add marker on map
+//                //googleMap.addMarker(markerOptions)
+//            }
+        })
+
+        return view
     }
 
     companion object {

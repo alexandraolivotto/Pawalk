@@ -23,4 +23,8 @@
     <string name="caption">caption</string>
     <string name="walk_location">walk location</string>
     <string name="walk_duration">walk duration</string>
+    <string name="log_out">Log out</string>
+    <string name="edit_username">edit username</string>
+    <string name="save">Save</string>
+    <string name="username">username</string>
 </resources>

@@ -19,7 +19,7 @@ import com.google.firebase.ktx.Firebase
 class CreateAccount : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-
+    private lateinit var username: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
@@ -28,6 +28,7 @@ class CreateAccount : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         val editTextEmail : TextInputEditText = findViewById(R.id.email_sign_up_input)
         val editTextPassword : TextInputEditText = findViewById(R.id.password_sign_up_input)
+        val editTextUsername : TextInputEditText = findViewById(R.id.username_input)
 
         val signUpButton : Button = findViewById(R.id.sign_up_button)
 
@@ -37,6 +38,7 @@ class CreateAccount : AppCompatActivity() {
         signUpButton.setOnClickListener {
             val email = editTextEmail.text.toString().trim()
             val password = editTextPassword.text.toString().trim()
+            val username = editTextUsername.text.toString().trim()
             progressBar.visibility = View.VISIBLE
 
             if (TextUtils.isEmpty(email)) {
@@ -59,7 +61,7 @@ class CreateAccount : AppCompatActivity() {
                        // updateUI(user)
                         progressBar.visibility = View.GONE
                         //link user to users db
-                        val newUser : User = User(email, "change username", "insert bio")
+                        val newUser : User = User(email, username, "insert bio")
                         val newUserUid = auth.currentUser?.uid
                         if (newUserUid != null) {
                             firestore.collection("users").document(newUserUid).set(newUser)

@@ -63,9 +63,6 @@ class FeedFragment : Fragment() {
         storageReference = FirebaseStorage.getInstance().reference
         val view : View = inflater.inflate(R.layout.fragment_feed, container, false)
         adapter = PostsAdapter(view.context, posts)
-
-
-
         rvPosts = view.findViewById<RecyclerView>(R.id.rvPosts)
         rvPosts.adapter = adapter
         rvPosts.layoutManager = LinearLayoutManager(view.context)

@@ -1,5 +1,7 @@
 package com.example.pawalk.models
 
+import com.google.firebase.firestore.GeoPoint
+
 data class Post (
     var caption : String = "",
     var imageUri: String = "",
@@ -7,9 +9,10 @@ data class Post (
     var location: String = "",
     var creationTimeMs: Long = 0,
     var user: User? = null,
-    var paws: Int = 0
+    var paws: Int = 0,
+    var geoLocation: GeoPoint? = null
 )
 {
-    constructor() : this( "", "","", "", 0, null, 0
+    constructor() : this( "", "","", "", 0, null, 0, null
     )
 }

@@ -64,7 +64,7 @@ class CreateAccount : AppCompatActivity() {
                         val newUser : User = User(email, username, "insert bio")
                         val newUserUid = auth.currentUser?.uid
                         if (newUserUid != null) {
-                            firestore.collection("users").document(newUserUid).set(newUser)
+                            firestore.collection("users").document(email).set(newUser)
                         }
 
                         Toast.makeText(baseContext, "Account created.",

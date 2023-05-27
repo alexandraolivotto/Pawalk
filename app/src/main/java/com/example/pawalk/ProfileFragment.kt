@@ -1,18 +1,19 @@
 package com.example.pawalk
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.Button
-import com.example.pawalk.models.User
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firestore.v1.WriteResult
+
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,15 +51,15 @@ class ProfileFragment : Fragment() {
         val logoutButton : Button = view.findViewById(R.id.logoutButton)
         val editUsername: TextInputEditText = view.findViewById(R.id.editUsername)
         val saveButton : Button = view.findViewById(R.id.saveButton)
+        firestore = FirebaseFirestore.getInstance()
 
-//        saveButton.setOnClickListener {
-//            val uid = FirebaseAuth.getInstance().currentUser?.uid as String
-//            firestore.collection("/users/")
-//                .document(uid).get().addOnSuccessListener {
-//                    doc ->  doc.se ("username", editUsername.text)
-//                }
-//
-//        }
+        saveButton.setOnClickListener {
+            val email = FirebaseAuth.getInstance().currentUser?.email as String
+            val docRef = firestore.collection("users").document(email)
+            docRef.update("username", editUsername.text.toString())
+            editUsername.text?.clear()
+            Toast.makeText(activity, "Username updated!", Toast.LENGTH_SHORT).show()
+        }
 
         logoutButton.setOnClickListener {
             val intent = Intent(this.context, MainActivity::class.java)

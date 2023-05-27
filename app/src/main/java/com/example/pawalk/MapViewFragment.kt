@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.pawalk.models.Location
+import com.example.pawalk.models.User
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
@@ -67,8 +70,23 @@ class MapViewFragment : Fragment() {
                             val name: String? = document.getString("name")
                             val location = geoPoint?.let { LatLng(geoPoint.latitude, geoPoint.longitude) }
                             googleMap.addMarker(MarkerOptions().position(location!!).title(name))
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(location))
                         }
+                    }
+                } else {
+                    Log.d("TAG", task.exception!!.message!!) //Never ignore potential errors!
+                }
+            }
+
+            //show friends locations
+            firestore.collection("posts").get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    for (document in task.result) {
+                        val geoPoint: GeoPoint? = document.getGeoPoint("geoLocation")
+                        val user: HashMap<String, String> = document.get("user") as HashMap<String, String>
+                        val location = geoPoint?.let {LatLng(geoPoint.latitude, geoPoint.longitude)}
+                        val username = user["username"]
+                        googleMap.addMarker(MarkerOptions().position(location!!).title(username).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)))
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(location))
                     }
                 } else {
                     Log.d("TAG", task.exception!!.message!!) //Never ignore potential errors!

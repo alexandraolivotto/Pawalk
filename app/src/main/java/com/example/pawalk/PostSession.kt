@@ -1,7 +1,9 @@
 package com.example.pawalk
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -13,19 +15,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.pawalk.models.Location
 import com.example.pawalk.models.Post
 import com.example.pawalk.models.User
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.util.jar.Manifest
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -57,6 +67,8 @@ class PostSession : Fragment() {
     private lateinit var image : ImageView
     private lateinit var discardButton : FloatingActionButton
     private lateinit var postButton : FloatingActionButton
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var geoPoint: GeoPoint
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +85,7 @@ class PostSession : Fragment() {
         auth = Firebase.auth
         firestore = FirebaseFirestore.getInstance()
         storageReference = FirebaseStorage.getInstance().reference
+        geoPoint = getLastLocation()
         // Inflate the layout for this fragment
         val view : View =  inflater.inflate(R.layout.fragment_post_session, container, false)
 
@@ -84,7 +97,7 @@ class PostSession : Fragment() {
         postButton = view.findViewById(R.id.postButton)
 
         firestore.collection("users")
-            .document(FirebaseAuth.getInstance().currentUser?.uid as String)
+            .document(FirebaseAuth.getInstance().currentUser?.email as String)
             .get()
             .addOnSuccessListener { userSnapshot ->
                 signedInUser = userSnapshot.toObject(User::class.java)
@@ -109,6 +122,16 @@ class PostSession : Fragment() {
         }
 
         return view
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation(): GeoPoint {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+        var geo : GeoPoint = GeoPoint(0.0, 0.0)
+        fusedLocationClient.lastLocation.addOnSuccessListener {
+            geolocation -> if (geolocation != null) geo = GeoPoint(geolocation.latitude, geolocation.longitude)
+        }
+        return geo
     }
 
     private fun getImageUri(inImage: Bitmap): Uri {
@@ -162,8 +185,9 @@ class PostSession : Fragment() {
                 photoRef.downloadUrl
             }
             .continueWithTask { downloadUrlTask ->
-                val post = Post(caption.text.toString(), downloadUrlTask.result.toString(), duration.text.toString(), location.text.toString(), System.currentTimeMillis(), signedInUser)
-                firestore.collection("posts").add(post)
+                val creationTime = System.currentTimeMillis()
+                val newPost = Post(caption.text.toString(), downloadUrlTask.result.toString(), duration.text.toString(), location.text.toString(), creationTime, signedInUser, 0, geoPoint)
+                firestore.collection("posts").document(creationTime.toString()).set(newPost)
             }.addOnCompleteListener { postCreationTask ->
                 if (!postCreationTask.isSuccessful) {
                     Toast.makeText(activity, "Session creation failed", Toast.LENGTH_SHORT).show()

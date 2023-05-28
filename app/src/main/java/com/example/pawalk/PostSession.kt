@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -35,6 +36,7 @@ import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.time.Duration
 import java.util.jar.Manifest
 
 // TODO: Rename parameter arguments, choose names that match
@@ -63,6 +65,7 @@ class PostSession : Fragment() {
     private lateinit var storageReference : StorageReference
     private lateinit var location : TextInputEditText
     private lateinit var duration : TextInputEditText
+    private lateinit var timeUnit: Spinner
     private lateinit var caption : TextInputEditText
     private lateinit var image : ImageView
     private lateinit var discardButton : FloatingActionButton
@@ -91,6 +94,7 @@ class PostSession : Fragment() {
 
         location = view.findViewById(R.id.locationInput)
         duration = view.findViewById(R.id.durationInput)
+        timeUnit = view.findViewById(R.id.timeUnit)
         caption = view.findViewById(R.id.caption)
         image = view.findViewById(R.id.imageUpload)
         discardButton = view.findViewById(R.id.discardButton)
@@ -148,6 +152,18 @@ class PostSession : Fragment() {
         return Uri.fromFile(tempFile)
     }
 
+    private fun getExpirationTime(time: String, timeUnit: String): Long {
+        var postingTime = System.currentTimeMillis()
+        var expirationTime : Long = 0
+        if (timeUnit.equals("hours")) {
+            expirationTime = time.toLong() * 3600
+        } else {
+            expirationTime = time.toLong() * 60
+        }
+        expirationTime = postingTime + expirationTime * 1000
+        return expirationTime
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
@@ -186,7 +202,8 @@ class PostSession : Fragment() {
             }
             .continueWithTask { downloadUrlTask ->
                 val creationTime = System.currentTimeMillis()
-                val newPost = Post(caption.text.toString(), downloadUrlTask.result.toString(), duration.text.toString(), location.text.toString(), creationTime, signedInUser, 0, geoPoint)
+                val expirationTime = getExpirationTime(duration.text.toString(), timeUnit.selectedItem.toString())
+                val newPost = Post(caption.text.toString(), downloadUrlTask.result.toString(), duration.text.toString(), location.text.toString(), creationTime, signedInUser, 0, geoPoint, expirationTime)
                 firestore.collection("posts").document(creationTime.toString()).set(newPost)
             }.addOnCompleteListener { postCreationTask ->
                 if (!postCreationTask.isSuccessful) {

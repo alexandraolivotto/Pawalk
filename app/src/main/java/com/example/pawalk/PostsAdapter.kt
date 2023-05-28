@@ -48,7 +48,7 @@ class PostsAdapter (val context : Context, val posts: List<Post>) :
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         fun bind(post: Post) {
             itemView.findViewById<TextView>(R.id.display_name_text_view).text = post.user?.username
-            itemView.findViewById<TextView>(R.id.post_time_text_view).text = post.location + " | " + post.duration + " | " + DateUtils.getRelativeTimeSpanString(post.creationTimeMs)
+            itemView.findViewById<TextView>(R.id.post_time_text_view).text = post.location + " | " + DateUtils.getRelativeTimeSpanString(post.creationTimeMs)
             itemView.findViewById<TextView>(R.id.description_textview).text = post.caption
             Glide.with(context).load(post.imageUri).into(itemView.findViewById(R.id.item_gallery_post_image_imageview))
 //            if (pawed) {

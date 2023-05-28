@@ -10,9 +10,10 @@ data class Post (
     var creationTimeMs: Long = 0,
     var user: User? = null,
     var paws: Int = 0,
-    var geoLocation: GeoPoint? = null
+    var geoLocation: GeoPoint? = null,
+    var expirationTime: Long
 )
 {
-    constructor() : this( "", "","", "", 0, null, 0, null
+    constructor() : this( "", "","", "", 0, null, 0, null, 0
     )
 }

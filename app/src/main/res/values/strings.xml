@@ -27,4 +27,9 @@
     <string name="edit_username">edit username</string>
     <string name="save">Save</string>
     <string name="username">username</string>
+    <string-array name="time_unit">
+        <item>minutes</item>
+        <item>hours</item>
+    </string-array>
+
 </resources>

@@ -78,7 +78,7 @@ class MapViewFragment : Fragment() {
             }
 
             //show friends locations
-            firestore.collection("posts").get().addOnCompleteListener { task ->
+            firestore.collection("posts").whereGreaterThan("expirationTime", System.currentTimeMillis()).get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     for (document in task.result) {
                         val geoPoint: GeoPoint? = document.getGeoPoint("geoLocation")
@@ -95,20 +95,6 @@ class MapViewFragment : Fragment() {
 
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(50F), 400, null);
 
-//            googleMap.setOnMapClickListener { latLng -> // When clicked on map
-//                // Initialize marker options
-//                val markerOptions = MarkerOptions()
-//                // Set position of marker
-//                markerOptions.position(latLng)
-//                // Set title of marker
-//                markerOptions.title("hello")
-//                // Remove all marker
-//                //googleMap.clear()
-//                // Animating to zoom the marker
-//                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f))
-//                // Add marker on map
-//                //googleMap.addMarker(markerOptions)
-//            }
         })
 
         return view

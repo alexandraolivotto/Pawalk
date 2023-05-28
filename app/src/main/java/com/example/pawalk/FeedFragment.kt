@@ -67,7 +67,7 @@ class FeedFragment : Fragment() {
         rvPosts.adapter = adapter
         rvPosts.layoutManager = LinearLayoutManager(view.context)
 
-        val postsRef = firestore.collection("posts").limit(20).orderBy("creationTimeMs", Query.Direction.DESCENDING)
+        val postsRef = firestore.collection("posts").whereGreaterThan("expirationTime", System.currentTimeMillis()).orderBy("expirationTime", Query.Direction.DESCENDING)
         postsRef.addSnapshotListener { snapshot, exception ->
             if (exception != null || snapshot == null) {
                 return@addSnapshotListener

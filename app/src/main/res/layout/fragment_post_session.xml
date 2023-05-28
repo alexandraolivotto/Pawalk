@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -38,13 +39,13 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/locationInput"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:drawableStart="@drawable/baseline_pin_drop_24"
                     android:drawablePadding="0dp"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="0dp"
                     android:fontFamily="sans-serif-light"
                     android:hint="@string/walk_location"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:singleLine="true"
                     android:textColor="#8C8C8C" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -54,26 +55,39 @@
                 android:id="@+id/inputDivider"
                 android:layout_width="10dp"
                 android:layout_height="25dp"
-                android:background="#00000000" />
+                android:background="#00000000"
+                />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:boxBackgroundMode="filled">
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="filled">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/durationInput"
-                    android:layout_width="match_parent"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/baseline_access_time_24"
                     android:drawablePadding="0dp"
                     android:fontFamily="sans-serif-light"
-                    android:hint="@string/walk_duration"
                     android:paddingStart="0dp"
                     android:paddingEnd="0dp"
                     android:textColor="#8C8C8C"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Spinner
+                    android:id="@+id/timeUnit"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:entries="@array/time_unit"
+                    />
+            </LinearLayout>
+
+
         </LinearLayout>
 
 

@@ -27,6 +27,8 @@
     <string name="edit_username">edit username</string>
     <string name="save">Save</string>
     <string name="username">username</string>
+    <string name="follow_more_furry_friends">Follow more furry friends</string>
+    <string name="follow">Follow</string>
     <string-array name="time_unit">
         <item>minutes</item>
         <item>hours</item>

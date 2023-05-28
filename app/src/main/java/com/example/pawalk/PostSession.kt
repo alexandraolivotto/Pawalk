@@ -71,7 +71,6 @@ class PostSession : Fragment() {
     private lateinit var discardButton : FloatingActionButton
     private lateinit var postButton : FloatingActionButton
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var geoPoint: GeoPoint
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +87,6 @@ class PostSession : Fragment() {
         auth = Firebase.auth
         firestore = FirebaseFirestore.getInstance()
         storageReference = FirebaseStorage.getInstance().reference
-        geoPoint = getLastLocation()
         // Inflate the layout for this fragment
         val view : View =  inflater.inflate(R.layout.fragment_post_session, container, false)
 
@@ -106,6 +104,8 @@ class PostSession : Fragment() {
             .addOnSuccessListener { userSnapshot ->
                 signedInUser = userSnapshot.toObject(User::class.java)
             }
+
+        
 
         image.setOnClickListener {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -177,6 +177,7 @@ class PostSession : Fragment() {
     }
 
 
+    @SuppressLint("MissingPermission")
     private fun handlePostButton() {
         if (location.text!!.isBlank()) {
             Toast.makeText(activity, "Location not set!", Toast.LENGTH_SHORT).show()
@@ -203,7 +204,12 @@ class PostSession : Fragment() {
             .continueWithTask { downloadUrlTask ->
                 val creationTime = System.currentTimeMillis()
                 val expirationTime = getExpirationTime(duration.text.toString(), timeUnit.selectedItem.toString())
-                val newPost = Post(caption.text.toString(), downloadUrlTask.result.toString(), duration.text.toString(), location.text.toString(), creationTime, signedInUser, 0, geoPoint, expirationTime)
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+                var geo : GeoPoint = GeoPoint(0.0, 0.0)
+                fusedLocationClient.lastLocation.addOnSuccessListener {
+                        geolocation -> if (geolocation != null) geo = GeoPoint(geolocation.latitude, geolocation.longitude)
+                }
+                val newPost = Post(caption.text.toString(), downloadUrlTask.result.toString(), duration.text.toString(), location.text.toString(), creationTime, signedInUser, 0, geo, expirationTime)
                 firestore.collection("posts").document(creationTime.toString()).set(newPost)
             }.addOnCompleteListener { postCreationTask ->
                 if (!postCreationTask.isSuccessful) {

@@ -14,6 +14,7 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pawalk.models.Post
+import com.example.pawalk.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -47,7 +48,15 @@ class PostsAdapter (val context : Context, val posts: List<Post>) :
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         fun bind(post: Post) {
-            itemView.findViewById<TextView>(R.id.display_name_text_view).text = post.user?.username
+            //avatar_image_view
+            firestore.collection("users")
+                .document(post?.user?.email as String)
+                .get()
+                .addOnSuccessListener { userSnapshot ->
+                    var signedInUser = userSnapshot.toObject(User::class.java)
+                    Glide.with(context).load(signedInUser?.profilePicUri).into(itemView.findViewById(R.id.avatar_image_view))
+                    itemView.findViewById<TextView>(R.id.display_name_text_view).text = signedInUser?.username
+                }
             itemView.findViewById<TextView>(R.id.post_time_text_view).text = post.location + " | " + DateUtils.getRelativeTimeSpanString(post.creationTimeMs)
             itemView.findViewById<TextView>(R.id.description_textview).text = post.caption
             Glide.with(context).load(post.imageUri).into(itemView.findViewById(R.id.item_gallery_post_image_imageview))

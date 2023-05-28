@@ -1,18 +1,33 @@
 package com.example.pawalk
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.example.pawalk.models.Post
+import com.example.pawalk.models.User
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.firestore.v1.WriteResult
-
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -31,7 +46,11 @@ class ProfileFragment : Fragment() {
     private var param2: String? = null
 
     private lateinit var firestore: FirebaseFirestore
-
+    private var signedInUser: User? = null
+    private val CAMERA_REQUEST = 1888
+    private lateinit var image : ImageView
+    private lateinit var storageReference : StorageReference
+    private var photoUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +60,7 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,10 +68,27 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         val view : View = inflater.inflate(R.layout.fragment_profile_view, container, false)
 
+        image = view.findViewById(R.id.imageView6)
         val logoutButton : Button = view.findViewById(R.id.logoutButton)
         val editUsername: TextInputEditText = view.findViewById(R.id.editUsername)
         val saveButton : Button = view.findViewById(R.id.saveButton)
         firestore = FirebaseFirestore.getInstance()
+        storageReference = FirebaseStorage.getInstance().reference
+        firestore.collection("users")
+            .document(FirebaseAuth.getInstance().currentUser?.email as String)
+            .get()
+            .addOnSuccessListener { userSnapshot ->
+                signedInUser = userSnapshot.toObject(User::class.java)
+                if (signedInUser?.profilePicUri != "") {
+                    Glide.with(this.requireContext()).load(signedInUser?.profilePicUri).into(view.findViewById(R.id.imageView6))
+                }
+                view.findViewById<TextView>(R.id.username_input).text = signedInUser?.username
+            }
+
+        image.setOnClickListener {
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(cameraIntent, CAMERA_REQUEST)
+        }
 
         saveButton.setOnClickListener {
             val email = FirebaseAuth.getInstance().currentUser?.email as String
@@ -59,6 +96,20 @@ class ProfileFragment : Fragment() {
             docRef.update("username", editUsername.text.toString())
             editUsername.text?.clear()
             Toast.makeText(activity, "Username updated!", Toast.LENGTH_SHORT).show()
+
+            val photoRef = storageReference.child("images/${System.currentTimeMillis()}-photo.jpg")
+            photoRef.putFile(photoUri!!)
+                .continueWithTask {
+                    photoRef.downloadUrl
+                }
+                .continueWithTask { downloadUrlTask ->
+                   docRef.update("profilePicUri", downloadUrlTask.result.toString())
+                }.addOnCompleteListener { postCreationTask ->
+                    if (!postCreationTask.isSuccessful) {
+                        Toast.makeText(activity, "Profile picture update failed", Toast.LENGTH_SHORT).show()
+                    }
+                    Toast.makeText(activity, "Profile picture successfully updated!", Toast.LENGTH_SHORT).show()
+                }
         }
 
         logoutButton.setOnClickListener {
@@ -67,6 +118,32 @@ class ProfileFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun getImageUri(inImage: Bitmap): Uri {
+
+        val tempFile = File.createTempFile("temprentpk", ".png")
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes)
+        val bitmapData = bytes.toByteArray()
+
+        val fileOutPut = FileOutputStream(tempFile)
+        fileOutPut.write(bitmapData)
+        fileOutPut.flush()
+        fileOutPut.close()
+        return Uri.fromFile(tempFile)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            val extras = data!!.extras
+            val imageBitmap = extras!!.get("data")  as Bitmap?
+            photoUri = imageBitmap?.let { getImageUri(it) }
+            Log.d("imageURI", "" + photoUri)
+            image.setImageBitmap(imageBitmap)
+            image.setImageURI(photoUri)
+        }
     }
 
     companion object {
